@@ -1,25 +1,30 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+   return (
+      <div className="app">
+         <section className="side-bar">
+            <button> + New Chat</button>
+            <ul className="history">
+               <li>This is a conversation</li>
+            </ul>
+            <nav>
+               <p>Make by Wookie</p>
+            </nav>
+         </section>
+         <section className="main">
+            <h1>Chau GPT</h1>
+            <ul className="feed"></ul>
+            <div className="bottom-section">
+               <div className="input-container">
+                  <input />
+                  <div id="submit">#</div>
+               </div>
+               <p className="infor">random test about chat GPT</p>
+            </div>
+         </section>
+      </div>
+   );
 }
 
 export default App;
