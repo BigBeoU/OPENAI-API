@@ -14,7 +14,7 @@ app.use(express.json());
 const apiUrl = "https://api.openai.com/v1/chat/completions";
 const apiKey = process.env.OPENAI_API_KEY;
 
-app.get("", async (req, res) => {
+app.get("/completion", async (req, res) => {
    const messages = [
       { role: "system", content: "You are a helpful assistant." },
       { role: "user", content: "What is the capital of France?" },

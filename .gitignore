@@ -3,7 +3,7 @@
 /fontend/node_modules
 /backend/package-lock.json
 /backend/node_modules
-
+/backend/.env
 
 
 
