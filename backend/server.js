@@ -56,7 +56,7 @@ app.post("/completion", async (req, res) => {
          apiUrl,
          {
             model: "gpt-3.5-turbo",
-            messages: [{ role: "user", content: "how are you?" }],
+            messages: [{ role: "user", content: req.body.messages }],
             max_tokens: 100,
          },
          {
