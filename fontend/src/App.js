@@ -8,6 +8,7 @@ function App() {
    const [messages, setMessages] = useState(null);
    const [previousChat, setPreviousChat] = useState([]);
    const [currentTitle, setCurrentTitle] = useState(null);
+   const [copyValue, setCopyValue] = useState("");
 
    const createNewChat = () => {
       setMessages(null);
@@ -18,14 +19,15 @@ function App() {
    const handleClick = (uniqueTitle) => {
       setCurrentTitle(uniqueTitle);
       setMessages(null);
-      setValue(null);
+      setValue("");
    };
    const getMessage = async () => {
       try {
+         setCopyValue(value);
          const response = await axios.post(
             "http://localhost:5000/completion",
             {
-               messages: value,
+               messages: copyValue,
             },
             {
                headers: {
@@ -35,25 +37,25 @@ function App() {
             },
          );
          setMessages(response.data.choices[0].message);
-         console.log(response.data.choices[0].message);
       } catch (error) {
          console.error("Error:", error);
       }
+      setValue("");
    };
-   console.log(messages);
+   console.log("message from response", messages);
 
    useEffect(() => {
-      console.log(currentTitle, value, messages);
-      if (!currentTitle && value && messages) {
-         setCurrentTitle(value);
+      console.log(currentTitle, copyValue, messages);
+      if (!currentTitle && copyValue && messages) {
+         setCurrentTitle(copyValue);
       }
-      if (currentTitle && value && messages) {
+      if (currentTitle && copyValue && messages) {
          setPreviousChat((prevChat) => [
             ...prevChat,
             {
                title: currentTitle,
                role: "user",
-               content: value,
+               content: copyValue,
             },
             {
                title: currentTitle,
@@ -65,6 +67,7 @@ function App() {
    }, [messages, currentTitle]);
 
    console.log("previousChat", previousChat);
+
    const currentChat = previousChat.filter(
       (prevChat) => prevChat.title === currentTitle,
    );
