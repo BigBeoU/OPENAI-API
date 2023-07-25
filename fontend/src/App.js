@@ -7,7 +7,7 @@ function App() {
    const [value, setValue] = useState("");
    const [messages, setMessages] = useState(null);
    const [previousChat, setPreviousChat] = useState([]);
-   const [currentTitle, setCurrentTitle] = useState(null);
+   const [currentTitle, setCurrentTitle] = useState([]);
    const [copyValue, setCopyValue] = useState("");
 
    const createNewChat = () => {
@@ -40,15 +40,16 @@ function App() {
       } catch (error) {
          console.error("Error:", error);
       }
-      setValue("");
+      // setValue("");
    };
    console.log("message from response", messages);
+   console.log("copyValue", copyValue);
+
+   if (!currentTitle && copyValue && messages) {
+      setCurrentTitle(copyValue);
+   }
 
    useEffect(() => {
-      console.log(currentTitle, copyValue, messages);
-      if (!currentTitle && copyValue && messages) {
-         setCurrentTitle(copyValue);
-      }
       if (currentTitle && copyValue && messages) {
          setPreviousChat((prevChat) => [
             ...prevChat,
@@ -67,6 +68,7 @@ function App() {
    }, [messages, currentTitle]);
 
    console.log("previousChat", previousChat);
+   console.log("currentTitle", currentTitle);
 
    const currentChat = previousChat.filter(
       (prevChat) => prevChat.title === currentTitle,
