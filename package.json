@@ -1,0 +1,15 @@
+{
+   "name": "ChatGPT-clone",
+   "version": "1.0.0",
+   "scripts": {
+      "start": "concurrently \"npm run backend\" \"npm run frontend\"",
+      "backend": "cd backend && npm start",
+      "frontend": "cd frontend && npm start",
+      "install-all": "run-p install-backend install-frontend",
+      "install-backend": "npm install --prefix backend",
+      "install-frontend": "npm install --prefix frontend"
+   },
+   "devDependencies": {
+      "concurrently": "^8.2.0"
+   }
+}

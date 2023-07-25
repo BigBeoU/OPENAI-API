@@ -8,7 +8,7 @@ function App() {
    const [messages, setMessages] = useState(null);
    const [previousChat, setPreviousChat] = useState([]);
    const [currentTitle, setCurrentTitle] = useState(null);
-   const [copyValue, setCopyValue] = useState("");
+   const [storedValue, setStoredValue] = useState("");
 
    const createNewChat = () => {
       setMessages(null);
@@ -21,13 +21,20 @@ function App() {
       setMessages(null);
       setValue("");
    };
+   const handleKeyDown = (e) => {
+      if (e.key === "Enter") {
+         e.preventDefault();
+         setStoredValue(value); // Store the input value
+         getMessage();
+         setValue("");
+      }
+   };
    const getMessage = async () => {
       try {
-         setCopyValue(value);
          const response = await axios.post(
             "http://localhost:5000/completion",
             {
-               messages: copyValue,
+               messages: value,
             },
             {
                headers: {
@@ -37,25 +44,25 @@ function App() {
             },
          );
          setMessages(response.data.choices[0].message);
+         setValue("");
       } catch (error) {
          console.error("Error:", error);
       }
-      setValue("");
    };
    console.log("message from response", messages);
 
    useEffect(() => {
-      console.log(currentTitle, copyValue, messages);
-      if (!currentTitle && copyValue && messages) {
-         setCurrentTitle(copyValue);
+      console.log(currentTitle, storedValue, messages);
+      if (!currentTitle && storedValue && messages) {
+         setCurrentTitle(storedValue);
       }
-      if (currentTitle && copyValue && messages) {
+      if (currentTitle && storedValue && messages) {
          setPreviousChat((prevChat) => [
             ...prevChat,
             {
                title: currentTitle,
                role: "user",
-               content: copyValue,
+               content: storedValue,
             },
             {
                title: currentTitle,
@@ -64,7 +71,7 @@ function App() {
             },
          ]);
       }
-   }, [messages, currentTitle]);
+   }, [messages, currentTitle, storedValue]);
 
    console.log("previousChat", previousChat);
 
@@ -113,6 +120,9 @@ function App() {
                   <input
                      value={value}
                      onChange={(e) => setValue(e.target.value)}
+                     onKeyDown={(e) => {
+                        handleKeyDown(e);
+                     }}
                   />
                   <div id="submit" onClick={getMessage}>
                      #
