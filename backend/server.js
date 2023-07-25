@@ -56,7 +56,7 @@ app.post("/completion", async (req, res) => {
          apiUrl,
          {
             model: "gpt-3.5-turbo",
-            messages: [{ role: "user", content: "how are you?" }],
+            messages: [{ role: "user", content: req.body.messages }],
             max_tokens: 100,
          },
          {
@@ -76,5 +76,5 @@ app.post("/completion", async (req, res) => {
    }
 });
 
-const port = process.env.PORT;
+const port = process.env.PORT || 5000;
 app.listen(port, () => console.log("app listen to port", port));
