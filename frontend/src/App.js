@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 
 const apiKey = process.env.OPENAI_API_KEY;
@@ -23,12 +23,13 @@ function App() {
    };
    const handleKeyDown = (e) => {
       if (e.key === "Enter") {
-         e.preventDefault();
-         setStoredValue(value); // Store the input value
+         if (!value) return;
          getMessage();
-         setValue("");
       }
    };
+
+   console.log("message from response", messages);
+
    const getMessage = async () => {
       try {
          const response = await axios.post(
@@ -44,19 +45,19 @@ function App() {
             },
          );
          setMessages(response.data.choices[0].message);
+         setStoredValue(value);
          setValue("");
-      } catch (error) {
-         console.error("Error:", error);
+      } catch (err) {
+         console.log(err);
       }
    };
-   console.log("message from response", messages);
 
    useEffect(() => {
-      console.log(currentTitle, storedValue, messages);
       if (!currentTitle && storedValue && messages) {
          setCurrentTitle(storedValue);
       }
       if (currentTitle && storedValue && messages) {
+         //check array is not change return
          setPreviousChat((prevChat) => [
             ...prevChat,
             {
@@ -71,7 +72,7 @@ function App() {
             },
          ]);
       }
-   }, [messages, currentTitle, storedValue]);
+   }, [currentTitle, storedValue, messages]);
 
    console.log("previousChat", previousChat);
 
