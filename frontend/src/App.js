@@ -8,8 +8,8 @@ function App() {
    const [messages, setMessages] = useState(null);
    const [previousChat, setPreviousChat] = useState([]);
    const [currentTitle, setCurrentTitle] = useState(null);
-   const [storedValue, setStoredValue] = useState("");
-
+   const [storedValue, setStoredValue] = useState([]);
+   const [storedResData, setStoredResData] = useState([]);
    const createNewChat = () => {
       setMessages(null);
       setValue("");
@@ -53,26 +53,69 @@ function App() {
    };
 
    useEffect(() => {
-      if (!currentTitle && storedValue && messages) {
-         setCurrentTitle(storedValue);
-      }
-      if (currentTitle && storedValue && messages) {
+      // Fetch the data from the server when the component mounts
+      const fetchData = async () => {
+         try {
+            const response = await axios.get("http://localhost:5000/chats");
+            setStoredResData(response.data);
+            console.log("response.data", response.data);
+         } catch (error) {
+            console.error("Error fetching data:", error);
+         }
+      };
+      fetchData();
+   }, []);
+
+   useEffect(() => {
+      // This code will run every time storedValue is updated
+      console.log("storedValue has changed:", storedResData[0]);
+      if (!storedResData.length) return;
+      setMessages(storedResData[0].answer);
+      setStoredValue(storedResData[0].message);
+      setCurrentTitle(storedValue);
+
+      // if (!currentTitle && messages && storedValue) {
+      //    setCurrentTitle(storedValue);
+      // }
+      if (currentTitle && storedResData[0].message && storedResData[0].answer) {
          //check array is not change return
          setPreviousChat((prevChat) => [
             ...prevChat,
             {
                title: currentTitle,
-               role: "user",
+               role: "User",
                content: storedValue,
             },
             {
                title: currentTitle,
-               role: messages.role,
-               content: messages.content,
+               role: "Assistant",
+               content: messages,
             },
          ]);
       }
    }, [currentTitle, storedValue, messages]);
+
+   // useEffect(() => {
+   //    if (!currentTitle && storedValue && messages) {
+   //       setCurrentTitle(storedValue);
+   //    }
+   //    if (currentTitle && storedValue && messages) {
+   //       //check array is not change return
+   //       setPreviousChat((prevChat) => [
+   //          ...prevChat,
+   //          {
+   //             title: currentTitle,
+   //             role: "user",
+   //             content: storedValue,
+   //          },
+   //          {
+   //             title: currentTitle,
+   //             role: messages.role,
+   //             content: messages.content,
+   //          },
+   //       ]);
+   //    }
+   // }, [currentTitle, storedValue, messages]);
 
    console.log("previousChat", previousChat);
 

@@ -44,6 +44,30 @@ const Assistant = model(
    }),
 );
 
+const Chat = model(
+   "chat",
+   new Schema({
+      user: {
+         type: String,
+         required: true,
+      },
+      message: {
+         type: String,
+         required: true,
+         unique: true,
+      },
+      assistant: {
+         type: String,
+         required: true,
+      },
+      answer: {
+         type: String,
+         required: true,
+         unique: true,
+      },
+   }),
+);
+
 app.post("/completion", async (req, res) => {
    if (!req.body.messages) {
       console.log("no message");
@@ -65,23 +89,16 @@ app.post("/completion", async (req, res) => {
          },
       );
 
-      let user = new User({
-         role: "User",
+      let chatWindow = new Chat({
+         user: "User",
          message: req.body.messages,
+         assistant: "Assistant",
+         answer: response.data.choices[0].message.content,
       });
 
-      user.set("autoIndex", false);
+      chatWindow.set("autoIndex", false);
 
-      user = await user.save();
-
-      let assistant = new Assistant({
-         role: "Assistant",
-         content: response.data.choices[0].message.content,
-      });
-
-      assistant.set("autoIndex", false);
-
-      assistant = await assistant.save();
+      chatWindow = await chatWindow.save();
 
       res.send(response.data);
    } catch (error) {
@@ -90,6 +107,12 @@ app.post("/completion", async (req, res) => {
          error: "An error occurred while processing the request.",
       });
    }
+});
+
+app.get("/chats", async (req, res) => {
+   const chats = await Chat.find();
+
+   res.send(chats);
 });
 
 const port = process.env.PORT || 5000;
