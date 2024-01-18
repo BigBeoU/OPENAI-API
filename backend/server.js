@@ -5,7 +5,8 @@ import { Configuration, OpenAIApi } from "openai";
 import axios from "axios";
 import dotenv from "dotenv/config";
 import mongoose from "mongoose";
-import { Schema } from "mongoose";
+import chatWindow from "./model/chatWindow.model.js";
+
 import { model } from "mongoose";
 
 const app = express();
@@ -16,57 +17,6 @@ app.use(express.json());
 
 const apiUrl = "https://api.openai.com/v1/chat/completions";
 const apiKey = process.env.OPENAI_API_KEY;
-
-const User = model(
-   "user",
-   new Schema({
-      role: {
-         type: String,
-         required: true,
-      },
-      message: {
-         type: String,
-      },
-   }),
-);
-
-const Assistant = model(
-   "assistant",
-   new Schema({
-      role: {
-         type: String,
-         required: true,
-      },
-      content: {
-         type: String,
-         required: true,
-      },
-   }),
-);
-
-const Chat = model(
-   "chat",
-   new Schema({
-      user: {
-         type: String,
-         required: true,
-      },
-      message: {
-         type: String,
-         required: true,
-         unique: true,
-      },
-      assistant: {
-         type: String,
-         required: true,
-      },
-      answer: {
-         type: String,
-         required: true,
-         unique: true,
-      },
-   }),
-);
 
 app.post("/completion", async (req, res) => {
    if (!req.body.messages) {
@@ -79,7 +29,7 @@ app.post("/completion", async (req, res) => {
          {
             model: "gpt-3.5-turbo",
             messages: [{ role: "user", content: req.body.messages }],
-            max_tokens: 100,
+            max_tokens: 200,
          },
          {
             headers: {
@@ -89,16 +39,17 @@ app.post("/completion", async (req, res) => {
          },
       );
 
-      let chatWindow = new Chat({
+      let chat = new chatWindow({
+         title: "",
          user: "User",
          message: req.body.messages,
          assistant: "Assistant",
          answer: response.data.choices[0].message.content,
       });
 
-      chatWindow.set("autoIndex", false);
+      chat.set("autoIndex", false);
 
-      chatWindow = await chatWindow.save();
+      chat = await chat.save();
 
       res.send(response.data);
    } catch (error) {
@@ -110,7 +61,7 @@ app.post("/completion", async (req, res) => {
 });
 
 app.get("/chats", async (req, res) => {
-   const chats = await Chat.find();
+   const chats = await chatWindow.find();
 
    res.send(chats);
 });
